@@ -24,12 +24,12 @@ jobs:
       - name: Build the application
         run: npm run build
 
-      - name: Test SSH Connection and Restart Application
+      - name: Deploy to EC2
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           EC2_USER: ubuntu
-          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_HOST: 54.84.175.153
         run: |
-          echo "$SSH_PRIVATE_KEY" > key.pem
+          echo "$SSH_PRIVATE_KEY" | base64 --decode > key.pem
           chmod 600 key.pem
           ssh -i key.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "cd /home/ubuntu/nest-hello-world && pm2 restart nest-hello"
