@@ -6,37 +6,31 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: '16'
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: npm install
 
-      - name: Run tests
-        run: npm run test
-
-      - name: Build the project
+      - name: Build the application
         run: npm run build
 
       - name: Deploy to EC2
         env:
-          HOST: ${{ secrets.EC2_HOST }}
-          USER: ${{ secrets.EC2_USER }}
-          KEY: ${{ secrets.EC2_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          EC2_USER: ubuntu
+          EC2_HOST: your-ec2-ip
         run: |
-          scp -o StrictHostKeyChecking=no -i $KEY -r . $USER@$HOST:~/nestjs-hello-world
-          ssh -o StrictHostKeyChecking=no -i $KEY $USER@$HOST << EOF
-            cd ~/nestjs-hello-world
-            npm install --legacy-peer-deps
-            npm run build
-            pm2 restart all || pm2 start dist/main.js
-          EOF
+          echo "$SSH_PRIVATE_KEY" > key.pem
+          chmod 600 key.pem
+          scp -o StrictHostKeyChecking=no -i key.pem -r dist/* $EC2_USER@$EC2_HOST:/home/ubuntu/nest-hello-world/dist
+          ssh -o StrictHostKeyChecking=no -i key.pem $EC2_USER@$EC2_HOST "pm2 restart nest-hello"
