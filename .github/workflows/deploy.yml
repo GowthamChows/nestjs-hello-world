@@ -26,11 +26,7 @@ jobs:
 
       - name: Deploy to EC2
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           EC2_USER: ubuntu
           EC2_HOST: 54.84.175.153
         run: |
-          echo "$SSH_PRIVATE_KEY" > key.pem
-          chmod 600 key.pem
-          scp -o StrictHostKeyChecking=no -i key.pem -r dist/* $EC2_USER@$EC2_HOST:/home/ubuntu/nest-hello-world/dist
-          ssh -o StrictHostKeyChecking=no -i key.pem $EC2_USER@$EC2_HOST "pm2 restart nest-hello"
+          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "cd /home/ubuntu/nest-hello-world && pm2 restart nest-hello"
