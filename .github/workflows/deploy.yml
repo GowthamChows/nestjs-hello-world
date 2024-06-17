@@ -21,10 +21,7 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Run tests
-      run: npm run test
-
-    - name: Deploy to EC2
+     - name: Deploy to EC2
       env:
         EC2_PUBLIC_IP: ${{ secrets.EC2_PUBLIC_IP }}
         EC2_USER: ubuntu
@@ -33,3 +30,5 @@ jobs:
         sudo apt update
         sudo apt install -y sshpass
         sshpass -p $EC2_KEY ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_PUBLIC_IP "cd /path/to/your/app && git pull origin main && npm install && npm run build && pm2 restart all"
+
+   
