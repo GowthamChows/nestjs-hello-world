@@ -28,7 +28,7 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           EC2_USER: ubuntu
-          EC2_HOST: ${{ secrets.EC2_HOST }}  # Ensure correct substitution here
+          EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
           echo "$SSH_PRIVATE_KEY" > key.pem
           chmod 600 key.pem
